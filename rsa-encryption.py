@@ -22,7 +22,7 @@ def primesInRange(x, y):
 
 
 def encryption(p, q):
-    plain_text = 123345 # Max length = 2*bitsize?
+    plain_text = 3148512  # Max length = 2*(bitsize-1) - 1?
     n = p*q
 
     e = get_coprime(p, q)
@@ -61,7 +61,7 @@ def random_number(minbit, maxbit):
 
 
 def setup(bitsize):
-    primes = primesInRange(10**(bitsize-1), 10**bitsize)
+    primes = primesInRange(10**(bitsize-2), 10**(bitsize-1))
     p = random.choice(primes)
     q = random.choice(primes)
     while p == q:
@@ -73,7 +73,7 @@ def setup(bitsize):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    bitsize = 4
+    bitsize = 5
     [p, q, pubkey] = setup(bitsize)
     e = pubkey[0]
     c = pubkey[1]
