@@ -11,9 +11,8 @@ def compress_point(point):
 
 
 def ecc_calc_encryption_keys(pubKey, receiverPrivKey):
-    receiverPubKey = receiverPrivKey * curve.g
     sharedECCKey = pubKey * receiverPrivKey
-    return sharedECCKey, receiverPubKey
+    return sharedECCKey
 
 
 def ecc_calc_decryption_key(senderPrivKey, receiverPubKey):
@@ -64,7 +63,8 @@ if __name__ == '__main__':
     print("Sender's pubKey:", compress_point(senderPubKey))
 
     receiverPrivKey = random.randint(0, curve.field.n - 1)
-    (encryptKey, receiverPubKey) = ecc_calc_encryption_keys(senderPubKey, receiverPrivKey)
+    encryptKey = ecc_calc_encryption_keys(senderPubKey, receiverPrivKey)
+    receiverPubKey = receiverPrivKey * curve.g
 
     print("Receiver's privKey:", hex(receiverPrivKey))
     print("Receiver's pubKey:", compress_point(receiverPubKey))

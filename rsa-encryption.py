@@ -6,26 +6,12 @@ import random
 from math import gcd
 
 
-def primesInRange(x, y):
-    prime_list = []
-    for n in range(x, y):
-        isPrime = True
-
-        for num in range(2, n):
-            if n % num == 0:
-                isPrime = False
-
-        if isPrime:
-            prime_list.append(n)
-
-    return prime_list
-
-
 def encryption(p, q):
-    plain_text = 3148512  # Max length = 2*(bitsize-1) - 1?
+    plain_text = 'ECC vs RSA'  # Max length = 2*(bitsize-1) - 1?
+    plain_text = int.from_bytes(bytes(plain_text, 'utf-8'), 'big')
     n = p*q
 
-    e = get_coprime(p, q)
+    e = get_coprime(p, q, low=True)
     print("e", e)
 
     c = (plain_text**e) % n
@@ -35,23 +21,45 @@ def encryption(p, q):
 
 
 def decryption(message, privkey, n):
-    return (message**privkey) % n
+    return hex(pow(message, privkey, n))
+    # return hex(pow(message, privkey, n)).rstrip("L")
+
+
+def extended_euclidean_algorithm(a, b):
+    # Extended euclidean algorithm, used to calculate the private key factor d
+
+    if a == 0:
+        return b, 0, 1
+    else:
+        g, y, x = extended_euclidean_algorithm(b % a, a)
+        return g, x - (b // a) * y, y
 
 
 def get_priv_key(p, q, e):
-    m = (p-1)*(q-1)
-    for x in range(1, m):
-        if (e % m) * (x % m) % m == 1:
-            return x
-    raise Exception('The modular inverse does not exist.')
+    # Computes the modular inverse to get the private key
+
+    phi = (p-1)*(q-1)
+
+    g, x, y = extended_euclidean_algorithm(e, phi)
+
+    if g != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % phi
 
 
-def get_coprime(a, b):
+def get_coprime(a, b, low=False):
     phi = (a - 1)*(b - 1)
-    e = random.randint(1, phi)
+    e = random.randint(2, phi)
 
-    while gcd(e, a) != 1 or gcd(e, b) != 1:
-        e = random.randint(1, phi)
+    if low:
+        for i in range(3, phi):
+            if gcd (i, a) == 1 and gcd(i, b) == 1:
+                e = i
+                break
+    else:
+        while gcd(e, a) != 1 or gcd(e, b) != 1:
+            e = random.randint(1, phi)
 
     return e
 
@@ -60,21 +68,34 @@ def random_number(minbit, maxbit):
     return random.randint(10**(minbit-1), 10**(maxbit-1))
 
 
+def isPrime(n):
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+
+    return True
+
+
 def setup(bitsize):
-    primes = primesInRange(10**(bitsize-2), 10**(bitsize-1))
-    p = random.choice(primes)
-    q = random.choice(primes)
-    while p == q:
-        q = random.choice(primes)
+    lower = 10**(bitsize-2)
+    upper = 10**(bitsize-1)
+    p = random.randint(lower, upper)
+    while not isPrime(p):
+        p = random.randint(lower, upper)
+
+    q = random.randint(lower, upper)
+    while p == q or not isPrime(q):
+        q = random.randint(lower, upper)
     print("pq", p, q)
+
     pubkey = encryption(p, q)
-    return [p,q,pubkey]
+    return p, q, pubkey
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    bitsize = 5
-    [p, q, pubkey] = setup(bitsize)
+    bitsize = 16
+    (p, q, pubkey) = setup(bitsize)
     e = pubkey[0]
     c = pubkey[1]
     n = pubkey[2]
@@ -84,13 +105,12 @@ if __name__ == '__main__':
             break
         except Exception:
             print("\n\n\n\n")
-            [p, q, pubkey] = setup(bitsize)
+            (p, q, pubkey) = setup(bitsize)
             e = pubkey[0]
             c = pubkey[1]
             n = pubkey[2]
 
     print("d", priv_key)
-    print(decryption(c, priv_key, n))
 
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    decrypted = decryption(c, priv_key, n)
+    print(bytes.fromhex(decrypted[2:]))
