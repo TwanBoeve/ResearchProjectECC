@@ -2,8 +2,6 @@ import random
 import time
 from fastecdsa import keys, curve
 from fastecdsa.curve import brainpoolP256r1
-from fastecdsa.point import Point
-
 
 start_time = time.perf_counter()
 ecurve = brainpoolP256r1
