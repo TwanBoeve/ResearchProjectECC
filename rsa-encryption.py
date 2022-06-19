@@ -1,21 +1,18 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import random
 from math import gcd
-
+import time
 
 def encryption(p, q):
     plain_text = 'ECC vs RSA'  # Max length = 2*(bitsize-1) - 1?
+    print("\nPlain text:", plain_text)
     plain_text = int.from_bytes(bytes(plain_text, 'utf-8'), 'big')
     n = p*q
 
     e = get_coprime(p, q, low=True)
-    print("e", e)
+    print("\ne (coprime of p and q):", e)
 
     c = (plain_text**e) % n
-    print("C", c)
+    print("\nEncrypted message:", c)
 
     return [e, c, n]
 
@@ -86,7 +83,7 @@ def setup(bitsize):
     q = random.randint(lower, upper)
     while p == q or not isPrime(q):
         q = random.randint(lower, upper)
-    print("pq", p, q)
+    print("Random primes p and q:\n", p, "and", q, "respectively")
 
     pubkey = encryption(p, q)
     return p, q, pubkey
@@ -94,6 +91,7 @@ def setup(bitsize):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    start_time = time.perf_counter()
     bitsize = 16
     (p, q, pubkey) = setup(bitsize)
     e = pubkey[0]
@@ -105,12 +103,15 @@ if __name__ == '__main__':
             break
         except Exception:
             print("\n\n\n\n")
+            start_time = time.perf_counter()
             (p, q, pubkey) = setup(bitsize)
             e = pubkey[0]
             c = pubkey[1]
             n = pubkey[2]
 
-    print("d", priv_key)
+    print("Decryption key:", priv_key)
 
     decrypted = decryption(c, priv_key, n)
-    print(bytes.fromhex(decrypted[2:]))
+    print("\nDecrypted text:", bytes.fromhex(decrypted[2:]).decode('utf-8'))
+
+    print("\nElapsed time:", time.perf_counter() - start_time, "seconds")

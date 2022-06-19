@@ -1,5 +1,7 @@
 import hashlib
 import random
+import binascii
+import time
 
 from tinyec import registry as reg
 from Crypto.Cipher import AES
@@ -51,9 +53,11 @@ def decrypt(message, nonce, tag, sharedKey):
     return plain_text
 
 
-if __name__ == '__main__':
+def main():
     # NOTE: Uses AES-GCM (/AES-256-GCM), write about this in paper!
     # This means that a security level of 256 bits is used, about equal to
+
+    start_time = time.perf_counter()
 
     curve = reg.get_curve('brainpoolP256r1')
     # Private keys are random int from 0 to n-1
@@ -79,12 +83,14 @@ if __name__ == '__main__':
     sharedKey = encryptKey
 
     plain_text = b'ECC vs RSA'
-    print("\nPlain text:", plain_text)
+    print("\nPlain text:", plain_text.decode('utf-8'))
     encrypted, nonce, tag = encrypt(plain_text, sharedKey)
-    print("Encrypted text:", encrypted)
+    print("Encrypted text:", binascii.hexlify(encrypted).decode('utf-8'))
 
     decrypted = decrypt(encrypted, nonce, tag, sharedKey)
-    print("Decrypted text:", decrypted)
+    print("Decrypted text:", decrypted.decode('utf-8'))
 
+    print("\nElapsed time:", time.perf_counter() - start_time, "seconds")
 
-
+if __name__ == '__main__':
+    main()
