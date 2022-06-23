@@ -111,10 +111,12 @@ if __name__ == '__main__':
             c = pubkey[1]
             n = pubkey[2]
 
+    decrypt_timer = time.perf_counter()
     print("Decryption key:", priv_key)
 
     decrypted = decryption(c, priv_key, n)
     print("\nDecrypted text:", bytes.fromhex(decrypted[2:]).decode('utf-8'))
 
+    print("\nDecryption time: %s seconds" % (time.perf_counter() - decrypt_timer))
     print("\nElapsed time:", time.perf_counter() - start_time, "seconds")
     print("Memory used: %s MB" % (psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2))
