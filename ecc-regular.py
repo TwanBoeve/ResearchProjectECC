@@ -9,7 +9,6 @@ from fastecdsa.curve import brainpoolP256r1
 
 ecurve = brainpoolP256r1
 privKeyTemp, pubKeyTemp = keys.gen_keypair(brainpoolP256r1)
-print(pubKeyTemp.X)
 
 # Curve brainpoolp256r1 props:
 p = int('0xa9fb57dba1eea9bc3e660a909d838d726e3bf623d52620282013481d1f6e5377', base=16)
