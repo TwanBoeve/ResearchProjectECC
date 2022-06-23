@@ -27,24 +27,16 @@ for i in range(1000):
 
     k = random.randint(1, n - 1)
     pubKey = Public_key(gen, ecurve_G)
-    print(pubKey.point)
     pubKey.point = Point(ecurve, pubKeyTemp.x, pubKeyTemp.y)
-    print(pubKey.point)
     privKey = Private_key(pubKey, k)
 
     plain_text = b'ECC vs RSA'
     plain_int = int.from_bytes(plain_text, 'big')
     plain_point = ecurve_G * plain_int
-    print("\nPlain text:", plain_text.decode('utf-8'))
-    print("Plain int:", plain_int)
-    print("Plain point:\n", plain_point)
 
     # Cipher point Cm consists of C1 and C2
     c1 = k * ecurve_G
     c2 = plain_point + k * pubKey.point
-    print("\nCipher point:")
-    print("C1:\n", c1)
-    print("C2:\n", c2)
 
     c1Array = (str(c1).split(','))
     c1Array[0] = c1Array[0][1:]
@@ -52,11 +44,7 @@ for i in range(1000):
 
     # c1_decrypted = Point(ecurve, privKeyTemp * int(c1Array[0]), privKeyTemp * int(c1Array[1]))
     c1_decrypted = privKeyTemp * c1
-    print(c1_decrypted)
-    #
     decrypted = c2 + (-c1_decrypted)
-    print("\n Decrypted point:\n", decrypted)
-    print("\nDecrypted point equal to plain text point:", decrypted == plain_point)
 
     # Normally the original message can now be found by dividing
     # the decrypted point by point G. Unfortunately, this is not
