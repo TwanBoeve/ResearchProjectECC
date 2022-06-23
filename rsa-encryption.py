@@ -1,6 +1,8 @@
 import random
 from math import gcd
 import time
+import os
+import psutil
 
 def encryption(p, q):
     plain_text = 'ECC vs RSA'  # Max length = 2*(bitsize-1) - 1?
@@ -83,7 +85,7 @@ def setup(bitsize):
     q = random.randint(lower, upper)
     while p == q or not isPrime(q):
         q = random.randint(lower, upper)
-    print("Random primes p and q:\n", p, "and", q, "respectively")
+    print("Random primes p and q:\n %s and %s respectively" % (p, q))
 
     pubkey = encryption(p, q)
     return p, q, pubkey
@@ -115,3 +117,4 @@ if __name__ == '__main__':
     print("\nDecrypted text:", bytes.fromhex(decrypted[2:]).decode('utf-8'))
 
     print("\nElapsed time:", time.perf_counter() - start_time, "seconds")
+    print("Memory used: %s MB" % (psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2))

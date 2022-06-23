@@ -1,5 +1,8 @@
 import random
 import time
+import os
+import psutil
+
 from fastecdsa import keys, curve
 from fastecdsa.curve import brainpoolP256r1
 
@@ -42,3 +45,5 @@ print("\nDecrypted point equal to plain text point:", decrypted == plain_point)
 # print("Decoded plain text:", i.to_bytes(len(plain_text), 'big').decode('utf-8'))
 
 print("\nElapsed time:", time.perf_counter() - start_time, "seconds")
+
+print("Memory used: %s MB" % (psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2))

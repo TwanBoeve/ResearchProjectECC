@@ -2,6 +2,8 @@ import hashlib
 import random
 import binascii
 import time
+import os
+import psutil
 
 from tinyec import registry as reg
 from Crypto.Cipher import AES
@@ -92,5 +94,8 @@ def main():
 
     print("\nElapsed time:", time.perf_counter() - start_time, "seconds")
 
+
 if __name__ == '__main__':
     main()
+    print("Memory used: %s MB" % (psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2))
+
